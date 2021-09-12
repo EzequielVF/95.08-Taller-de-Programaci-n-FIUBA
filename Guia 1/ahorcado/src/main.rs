@@ -1,11 +1,11 @@
+use ahorcado::juego::Juego;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
 use std::process::exit;
-use ahorcado::juego::Juego;
 
 mod juego;
 
-fn leer_y_almacenar_palabras() -> Result<Vec<String>, Error>{
+fn leer_y_almacenar_palabras() -> Result<Vec<String>, Error> {
     let mut vector = Vec::new();
     let filename = "src/texto.txt";
     let file = File::open(filename)?;
@@ -37,7 +37,7 @@ pub fn leer_vector(vector: &Vec<String>) {
     }
 }
 
-fn main()  {
+fn main() {
     println!("Bienvenido al ahorcado de FIUBA!");
     let vector = leer_y_almacenar_palabras();
     if vector.is_err() {

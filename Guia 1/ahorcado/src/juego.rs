@@ -16,10 +16,20 @@ impl Juego {
     /// Constructor
 
     pub fn new(palabra: String) -> Self {
-        return Juego {palabra: palabra.to_lowercase(), longitud: palabra.len(), intentos: 5}
+        return Juego {
+            palabra: palabra.to_lowercase(),
+            longitud: palabra.len(),
+            intentos: 5,
+        };
     }
 
-    fn mostrar_info(&self, vector: &Vec<bool>, string_indexeable: &Vec<char>, adivinadas: &mut Vec<char>, equivocadas: &mut Vec<char>) {
+    fn mostrar_info(
+        &self,
+        vector: &Vec<bool>,
+        string_indexeable: &Vec<char>,
+        adivinadas: &mut Vec<char>,
+        equivocadas: &mut Vec<char>,
+    ) {
         print!("La palabra hasta el momento es: ");
 
         for i in 0..string_indexeable.len() {
@@ -44,7 +54,13 @@ impl Juego {
         println!("Ingresa una letra: ");
     }
 
-    fn solicitar_letra(&mut self, vector: &mut Vec<bool>, string_indexeable: &Vec<char>, adivinadas: &mut Vec<char>, equivocadas: &mut Vec<char>) -> Result<(), Errores> {
+    fn solicitar_letra(
+        &mut self,
+        vector: &mut Vec<bool>,
+        string_indexeable: &Vec<char>,
+        adivinadas: &mut Vec<char>,
+        equivocadas: &mut Vec<char>,
+    ) -> Result<(), Errores> {
         let mut p = String::new();
         let mut valida = false;
         let mut invalida_repetida = false;
@@ -66,9 +82,9 @@ impl Juego {
             }
         }
         if !valida {
-            for letra in &*equivocadas{
+            for letra in &*equivocadas {
                 let aux = letra.clone();
-                if aux == char_vec[0]{
+                if aux == char_vec[0] {
                     invalida_repetida = true;
                     println!("Letra erronea ya ingresada.");
                     println!();
@@ -94,17 +110,31 @@ impl Juego {
 
     pub fn jugar(&mut self) -> Result<i8, Errores> {
         let mut vector = Vec::new();
-        let mut adivinadas :Vec<char> = Vec::new();
-        let mut equivocadas :Vec<char> = Vec::new();
+        let mut adivinadas: Vec<char> = Vec::new();
+        let mut equivocadas: Vec<char> = Vec::new();
         let string_indexeable: Vec<char> = self.palabra.chars().collect();
-        for _i in 0..self.palabra.len() { //Lleno el vector de false
+        for _i in 0..self.palabra.len() {
+            //Lleno el vector de false
             vector.push(false);
         }
         while self.intentos > 0 {
-            self.mostrar_info(&vector, &string_indexeable, &mut adivinadas, &mut equivocadas);
-            self.solicitar_letra(&mut vector, &string_indexeable, &mut adivinadas, &mut equivocadas)?;
+            self.mostrar_info(
+                &vector,
+                &string_indexeable,
+                &mut adivinadas,
+                &mut equivocadas,
+            );
+            self.solicitar_letra(
+                &mut vector,
+                &string_indexeable,
+                &mut adivinadas,
+                &mut equivocadas,
+            )?;
             if Juego::adivino_todas(&vector) {
-                println!("Felicidades!! Adivinaste la palabra, esta era -> {}", self.palabra);
+                println!(
+                    "Felicidades!! Adivinaste la palabra, esta era -> {}",
+                    self.palabra
+                );
                 println!();
                 println!();
                 break;

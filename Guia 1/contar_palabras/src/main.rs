@@ -2,11 +2,12 @@ use std::io::{BufReader, BufRead};
 use std::fs::File;
 use std::collections::HashMap;
 
+//Esto deberia ir en Cosa.rs y hacerlo un poco menos acoplado pero para ahorrar tiempo lo dejo asi
 pub struct Cosa {
     palabra: String,
     repeticiones: i32,
 }
-
+//
 fn leer_y_almacenar_palabras() -> HashMap<String, i32>{
     let mut hash: HashMap<String, i32> = HashMap::new();
 

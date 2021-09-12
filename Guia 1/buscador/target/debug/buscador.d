@@ -1,0 +1,1 @@
+C:\Users\ezequ\Documents\GitHub\95.08-Taller-de-Programaci-n-FIUBA\Guia\ 1\buscador\target\debug\buscador.exe: C:\Users\ezequ\Documents\GitHub\95.08-Taller-de-Programaci-n-FIUBA\Guia\ 1\buscador\src\main.rs
