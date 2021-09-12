@@ -5,9 +5,16 @@ pub struct Juego {
     longitud: usize,
     intentos: i8,
 }
+#[derive(Debug)]
+#[warn(dead_code)]
+pub enum Errores {
+    SinMovimientos,
+}
 
+#[allow(dead_code)]
 impl Juego {
     /// Constructor
+
     pub fn new(palabra: String) -> Self {
         return Juego {palabra: palabra.to_lowercase(), longitud: palabra.len(), intentos: 5}
     }
@@ -37,7 +44,7 @@ impl Juego {
         println!("Ingresa una letra: ");
     }
 
-    fn solicitar_letra(&mut self, vector: &mut Vec<bool>, string_indexeable: &Vec<char>, adivinadas: &mut Vec<char>, equivocadas: &mut Vec<char>) {
+    fn solicitar_letra(&mut self, vector: &mut Vec<bool>, string_indexeable: &Vec<char>, adivinadas: &mut Vec<char>, equivocadas: &mut Vec<char>) -> Result<(), Errores> {
         let mut p = String::new();
         let mut valida = false;
         let mut invalida_repetida = false;
@@ -73,6 +80,7 @@ impl Juego {
             }
             self.intentos -= 1;
         }
+        Ok(())
     }
 
     fn adivino_todas(vector: &Vec<bool>) -> bool {
@@ -84,7 +92,7 @@ impl Juego {
         true
     }
 
-    pub fn jugar(&mut self) -> i8 {
+    pub fn jugar(&mut self) -> Result<i8, Errores> {
         let mut vector = Vec::new();
         let mut adivinadas :Vec<char> = Vec::new();
         let mut equivocadas :Vec<char> = Vec::new();
@@ -94,14 +102,18 @@ impl Juego {
         }
         while self.intentos > 0 {
             self.mostrar_info(&vector, &string_indexeable, &mut adivinadas, &mut equivocadas);
-            self.solicitar_letra(&mut vector, &string_indexeable, &mut adivinadas, &mut equivocadas);
+            self.solicitar_letra(&mut vector, &string_indexeable, &mut adivinadas, &mut equivocadas)?;
             if Juego::adivino_todas(&vector) {
                 println!("Felicidades!! Adivinaste la palabra, esta era -> {}", self.palabra);
                 println!();
                 println!();
                 break;
             }
+        } //No es lo mas optimo pero tenia q agregar el sistema de errores
+        if self.intentos < 1 {
+            Err(Errores::SinMovimientos)
+        } else {
+            Ok(self.intentos)
         }
-        self.intentos
     }
 }
