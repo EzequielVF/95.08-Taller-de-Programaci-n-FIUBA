@@ -35,10 +35,10 @@ fn recorrer_archivo_y_almacenar(indice: &mut HashMap<String, HashMap<String, i32
                         let valor = aux.get(&id.to_string()).unwrap();
                         let valor = valor + 1;
                         aux.insert(id.to_string(), valor); // Actualizo el valor de apariciones en el hash
-                        indice.insert(palabra.to_string(), aux.clone()); //Actualizo el hash asociado a esa clave
+                        indice.insert(palabra.to_string(), aux); //Actualizo el hash asociado a esa clave
                     } else { //La palabra no aparecio previamente en este documento
                         aux.insert(id.to_string(), 1);
-                        indice.insert(palabra.to_string(), aux.clone());
+                        indice.insert(palabra.to_string(), aux);
                     }
                 } else { // Si no estaba todavia en el indice
                     let mut hash_aux: HashMap<String, i32> = HashMap::new();
@@ -75,9 +75,44 @@ fn recorrer_indice(indice: &HashMap<String, HashMap<String, i32>>) {
     }
 }
 
+fn pedir_y_armar_hash_con_frase_para_busqueda(stop_words :&HashMap<String, i32>) -> HashMap<String, i32>{
+    let mut hash: HashMap<String, i32> = HashMap::new();
+    let mut p = String::new();
+    println!("Ingresa la frase a buscar:");
+    println!();
+    std::io::stdin().read_line(&mut p).unwrap();
+    let p = p.to_string().to_lowercase();
+    let palabras: Vec<_> = p.split_whitespace().collect();
+    for palabra in palabras {
+        if !es_stopword(stop_words, palabra) {
+            if !hash.contains_key(&palabra.to_string()) {
+                hash.insert(palabra.to_string(), 1);
+            }
+        }
+    }
+    hash
+}
+
+fn buscar_en_indice(indice: &HashMap<String, HashMap<String, i32>>, stop_words :&HashMap<String, i32>) {
+    let frase = pedir_y_armar_hash_con_frase_para_busqueda(stop_words);
+    let mut resultado :HashMap<String, f32> = HashMap::new();
+    resultado.insert("1".to_string(), 0.0);
+    resultado.insert("2".to_string(), 0.0);
+    resultado.insert("3".to_string(), 0.0);
+    for (key, value) in frase.iter() { //Voy viendo palabra a palabra
+        println!("{} - {}", key, value);
+        //
+        //
+        // Falta implementar
+        //
+        //
+    }
+}
+
 fn main() {
     let stop_words = leer_y_almacenar_stopwords(); //Me guardo las palabras que no deberia almacenar
     //leer_hash(&stop_words); //Muestra la lista de stop-words
     let indice :HashMap<String, HashMap<String, i32>> = leer_y_llenar_indice(&stop_words);
     recorrer_indice(&indice);
+    buscar_en_indice(&indice, &stop_words);
 }
