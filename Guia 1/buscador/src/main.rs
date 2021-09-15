@@ -99,14 +99,15 @@ fn buscar_en_indice(indice: &HashMap<String, HashMap<String, i32>>, stop_words :
     resultado.insert("1".to_string(), 0.0);
     resultado.insert("2".to_string(), 0.0);
     resultado.insert("3".to_string(), 0.0);
-    for (key, value) in frase.iter() { //Voy viendo palabra a palabra
-        println!("{} - {}", key, value);
-        //
-        //
-        // Falta implementar
-        //
-        //
+    for (palabra, _nada) in frase.iter() { //Voy viendo palabra a palabra
+        if indice.contains_key(palabra) { // Si la palabra esta en el indice
+            let mut aux = indice.get(palabra).unwrap().clone();
+            // Mirar en cuantos documentos aparece
+            // Calcular el log
+            // Asignar los resultados en el hash para resultados
+        }
     }
+    // Fijarse cual de los documentos tiene el mayor "puntaje"
 }
 
 fn main() {
