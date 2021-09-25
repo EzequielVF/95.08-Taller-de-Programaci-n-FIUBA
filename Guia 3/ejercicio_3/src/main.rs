@@ -65,47 +65,9 @@ pub fn combinar_hash(aux_1: &mut HashMap<String, i32>, aux_2: &HashMap<String, i
         }
     }
 }
-/* // Falta terminar Solucion 2 //
-fn main(){
-    let (sender, receiver) = mpsc::channel();
-    let sender = Arc::new(Mutex::new(sender));
 
-    {
-        let mutex_clone = Arc::clone(&sender);
-        thread::spawn(move || {
-            let hash = leer_y_almacenar_palabras("src/texto.txt");
-            mutex_clone.send(hash).unwrap()
-        }).join().unwrap();
-    }
-    {
-        let mutex_clone = Arc::clone(&sender);
-        thread::spawn(move || {
-            let hash = leer_y_almacenar_palabras("src/texto.txt");
-            mutex_clone.send(hash).unwrap()
-        }).join().unwrap();
-    }
-    {
-        let mutex_clone = Arc::clone(&sender);
-        thread::spawn(move || {
-            let hash = leer_y_almacenar_palabras("src/texto.txt");
-            mutex_clone.send(hash).unwrap()
-        }).join().unwrap();
-    }
-    {
-        let mutex_clone = Arc::clone(&sender);
-        thread::spawn(move || {
-            let hash = leer_y_almacenar_palabras("src/texto.txt");
-            mutex_clone.send(hash).unwrap()
-        }).join().unwrap();
-    }
-
-    let aux = sender.lock().unwrap().recv();
-    //
-    //
-}
-*/
-/* //Solucion 1//
-fn main() {
+//Solucion 1//
+/*fn main() {
     let handle_1 = thread::spawn( || {
         let hash = leer_y_almacenar_palabras("src/texto.txt");
         return hash;
@@ -128,5 +90,73 @@ fn main() {
     llenar_vector(&mut vec, &aux_1);
     ordenar_vector(&mut vec);
     leer_vector(&vec);
+}*/
+//Solucion 2
+/*fn main() {
+    let (sender, receiver) = mpsc::channel();
+    let mutex = Arc::new(Mutex::new(sender));
+
+    {
+        let mutex_clone = Arc::clone(&mutex);
+        thread::spawn(move || {
+            let hash = leer_y_almacenar_palabras("src/texto.txt");
+            mutex_clone.lock().unwrap().send(hash).unwrap();
+        });
+    }
+    {
+        let mutex_clone = Arc::clone(&mutex);
+        thread::spawn(move || {
+            let hash = leer_y_almacenar_palabras("src/texto.txt");
+            mutex_clone.lock().unwrap().send(hash).unwrap();
+        });
+    }
+    {
+        let mutex_clone = Arc::clone(&mutex);
+        thread::spawn(move || {
+            let hash = leer_y_almacenar_palabras("src/texto.txt");
+            mutex_clone.lock().unwrap().send(hash).unwrap();
+        });
+    }
+    let mut aux_1 = receiver.recv().unwrap();
+    let aux_2 = receiver.recv().unwrap();
+    let aux_3 = receiver.recv().unwrap();
+
+    combinar_hash(&mut aux_1, &aux_2);
+    combinar_hash(&mut aux_1, &aux_3);
+    let mut vec = Vec::new();
+    llenar_vector(&mut vec, &aux_1);
+    ordenar_vector(&mut vec);
+    leer_vector(&vec);
+}*/
+//Solucion 3
+fn main() {
+    let hash: HashMap<String, i32> = HashMap::new();
+    let mutex = Arc::new(Mutex::new(hash));
+
+    {
+        let mutex_clone = Arc::clone(&mutex);
+        thread::spawn(move || {
+            let hash_aux = leer_y_almacenar_palabras("src/texto.txt");
+            combinar_hash(&mut mutex_clone.lock().unwrap(), &hash_aux);
+        }).join().unwrap();
+    }
+    {
+        let mutex_clone = Arc::clone(&mutex);
+        thread::spawn(move || {
+            let hash_aux = leer_y_almacenar_palabras("src/texto.txt");
+            combinar_hash(&mut mutex_clone.lock().unwrap(), &hash_aux);
+        }).join().unwrap();
+    }
+    {
+        let mutex_clone = Arc::clone(&mutex);
+        thread::spawn(move || {
+            let hash_aux = leer_y_almacenar_palabras("src/texto.txt");
+            combinar_hash(&mut mutex_clone.lock().unwrap(), &hash_aux);
+        }).join().unwrap();
+    }
+
+    let mut vec = Vec::new();
+    llenar_vector(&mut vec, &mutex.lock().unwrap());
+    ordenar_vector(&mut vec);
+    leer_vector(&vec);
 }
-*/
