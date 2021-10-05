@@ -1,0 +1,15 @@
+[package]
+name = "clase-04"
+version = "0.1.0"
+authors = ["mlafroce <mlafroce@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+[[bin]]
+name = "cliente"
+path = "src/cliente.rs"
+
+[[bin]]
+name = "server"
+path = "src/server.rs"

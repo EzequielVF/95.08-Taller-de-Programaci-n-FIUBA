@@ -12,7 +12,7 @@ fn server_run(address: &str) -> std::io::Result<()> {
     client_stream.write("\n".as_bytes())?;
 
     handle_client(&mut client_stream)?;
-
+/*
     let address_aux = "0.0.0.0:".to_owned() + &"4667".to_string();
     let listener = TcpListener::bind(address_aux)?;
     let connection = listener.accept()?;
@@ -22,7 +22,7 @@ fn server_run(address: &str) -> std::io::Result<()> {
     client_stream.write(line.as_bytes())?;
     client_stream.write("\n".as_bytes())?;
 
-    handle_client(&mut client_stream)?;
+    handle_client(&mut client_stream)?;*/
     Ok(())
 }
 
@@ -41,7 +41,8 @@ fn client_run(address: &str) -> std::io::Result<()> {
     handle_client(&mut socket);
     let line = "Buen día Papá".to_string();
     socket.write(line.as_bytes())?;
-    socket.write("\n".as_bytes())?;
+    //socket.write("\n".as_bytes())?;
+
     Ok(())
 }
 
@@ -52,13 +53,13 @@ fn main() {
     });
     thread::spawn(move || {
         let address = "127.0.0.1".to_owned() + ":" + &"4666".to_string();
-        println!("Conectándome a {:?}", address);
+        println!("[CLIENTE] - Conectándome a {:?}", address);
         client_run(&address).unwrap();
     }).join().unwrap();
 
-    thread::spawn(move || {
+    /*thread::spawn(move || {
         let address = "127.0.0.1".to_owned() + ":" + &"4667".to_string();
         println!("Conectándome a {:?}", address);
         client_run(&address).unwrap();
-    }).join().unwrap();
+    }).join().unwrap();*/
 }
