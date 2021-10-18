@@ -1,76 +1,44 @@
-use std::thread;
-use std::sync::{mpsc, Arc, Mutex};
-use std::process::exit;
-use std::time::Duration;
+use std::collections::VecDeque;
+use std::sync::{Arc, Mutex};
+use std::thread::JoinHandle;
 
-trait FnBox {
-    fn call_box(self: Box<Self>);
+struct ThreadPool<F> where F: Fn() -> () + Send + 'static {
+    queue: Arc<Mutex<VecDeque<F>>>,
 }
 
-impl<F: FnOnce()> FnBox for F {
-    fn call_box(self: Box<F>) {
-        (*self)()
-    }
-}
+impl<F> ThreadPool<F> where F: Fn() -> () + Send + 'static {
 
-type Job = Box<dyn FnBox + Send + 'static>;
+    fn new(thread_count: u32) -> Self {
+        let queue: Mutex<VecDeque<F>> = Mutex::new(VecDeque::new());
+        let queue_ref = Arc::new(queue);
 
-pub struct ThreadPool {
-    workers: Vec<Worker>,
-    sender: mpsc::Sender<Job>
-}
-
-impl ThreadPool {
-    //Constructor
-    pub fn new(size: usize) -> Self {
-        assert!(size > 0);
-        let (sender, receiver) = mpsc::channel();
-        let receiver = Arc::new(Mutex::new(receiver));
-        let mut workers = Vec::with_capacity(size);
-        for id in 0..size {
-            workers.push(Worker::new(id, Arc::clone(&receiver)));
-        }
-        ThreadPool { workers, sender }
-    }
-
-    pub fn spawn<F>(&self, f: F)
-        where
-            F: FnOnce() + Send + 'static
-    {
-        let job = Box::new(f);
-        self.sender.send(job).unwrap();
-    }
-}
-
-struct Worker {
-    id: usize,
-    thread: thread::JoinHandle<()>,
-}
-#[warn(dead_code)]
-impl Worker {
-    fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
-        let thread = thread::spawn(move || {
-            loop {
-                let job = receiver.lock().unwrap().recv();
-                match  job {
-                    Ok(_) => {
-                        let job = job.unwrap();
-                        job.call_box();
-                        thread::sleep(Duration::from_millis(500));
-                    }
-                    Err(_) => {
-                        println!("Terminating.");
-                        break;
+        for _ in 0..thread_count {
+            let q = queue_ref.clone();
+            std::thread::spawn(move || {
+                loop {
+                    let mut real_queue = q.lock().unwrap();
+                    if !real_queue.is_empty() {
+                        let work_item: F = real_queue.pop_front().unwrap();
+                        drop(real_queue);
+                        work_item();
                     }
                 }
-            }
-        });
-        Worker { id, thread }
+            });
+        }
+        return ThreadPool {
+            queue: queue_ref
+        };
+    }
+
+    fn spawn(self: &Self, f: F) {
+        let mut queue = self.queue.lock().unwrap();
+        queue.push_back(f);
     }
 }
 
-fn main() {
-    let pool = ThreadPool::new(4);
+
+pub fn main() {
+    let pool = ThreadPool::new(1);
     for i in 0..4 {
         pool.spawn(move || {
             std::thread::sleep(std::time::Duration::from_millis(250 * i));

@@ -11,7 +11,6 @@ fn server_run(address: &str) -> std::io::Result<()> {
     client_stream.write("\n".as_bytes())?;
     client_stream.shutdown(Shutdown::Write).expect("shutdown call failed");
     handle_client(&mut client_stream)?;
-    client_stream.shutdown(Shutdown::Read).expect("shutdown call failed");
 
     let address_aux = "0.0.0.0:".to_owned() + &"4667".to_string();
     let listener = TcpListener::bind(address_aux)?;
@@ -22,7 +21,6 @@ fn server_run(address: &str) -> std::io::Result<()> {
     client_stream.write("\n".as_bytes())?;
     client_stream.shutdown(Shutdown::Write).expect("shutdown call failed");
     handle_client(&mut client_stream)?;
-    client_stream.shutdown(Shutdown::Read).expect("shutdown call failed");
 
     Ok(())
 }
